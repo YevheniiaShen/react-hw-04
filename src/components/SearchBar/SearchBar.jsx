@@ -1,5 +1,5 @@
 import toast from 'react-hot-toast';
-
+import css from './SearchBar.css'
 
 export const SearchBar = ({ onSearch }) => {
     const handleSubmit = evt => {
