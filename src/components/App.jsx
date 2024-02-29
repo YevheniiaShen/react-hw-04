@@ -1,41 +1,71 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { SearchBar } from './SearchBar/SearchBar';
+import { GlobalStyle } from './GlobalStyle';
+import { fetchImages, sortedImages } from './Api';
+import { Container, Empty } from './App.css';
 import { ImageGallery } from './ImageGallery/ImageGallery';
+import Button from './Button/Button';
 import { Loader } from './Loader/Loader';
-import { LoadMoreBtn } from './LoadMoreBtn/LoadMoreBtn';
-import { ErrorMessage } from './ErrorMessage/ErrorMessage';
-import { ImageModal } from './ImageModal/ImageModal';
-import { fetch } from '../api';
-import css from './App.module.css';
+import { SearchBar } from './SearchBar/SearchBar';
 
-function App() {
-  const [count, setCount] = useState(0)
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [searchImg, setSearchImg] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!searchImg || !page) {
+      return;
+    }
+    const renderImages = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchImages(searchImg, page);
+        if (data.hits.length === 0) {
+          return toast.error('Sorry image not found!');
+        }
+        const normalizedImg = sortedImages(data.hits);
+        setImages(prevState => [...prevState, ...normalizedImg]);
+        setIsLoading(false);
+        setTotalPages(Math.ceil(data.totalHits / 12));
+      } catch (error) {
+        toast.error('Something went wrong!');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    renderImages();
+  }, [page, searchImg]);
+
+  const handleSubmit = query => {
+    if (searchImg === query) {
+      return toast.error(`You are already browsing ${query}`);
+    }
+    setSearchImg(query);
+    setImages([]);
+    setPage(1);
+  };
+
+  const loadMore = () => {
+    setPage(prevState => prevState + 1);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
-
-export default App
+    <Container>
+      <SearchBar onSubmit={handleSubmit} />
+      {images.length > 0 ? (
+        <ImageGallery images={images} />
+      ) : (
+        <Empty>Gallery is empty</Empty>
+      )}
+      {isLoading && <Loader />}
+      {images.length > 0 && totalPages !== page && !isLoading && (
+        <Button onClick={loadMore} />
+      )}
+      <Toaster />
+      <GlobalStyle />
+    </Container>
+  );
+};
