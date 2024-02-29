@@ -3,7 +3,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { fetchImages, sortedImages } from './Api';
 import { Container, Empty } from './App.css';
 import { ImageGallery } from './ImageGallery/ImageGallery';
-import Button from './Button/Button';
+import { LoadMoreBtn } from './LoadMoreBtn/LoadMoreBtn';
 import { Loader } from './Loader/Loader';
 import { SearchBar } from './SearchBar/SearchBar';
 
@@ -61,10 +61,9 @@ export const App = () => {
       )}
       {isLoading && <Loader />}
       {images.length > 0 && totalPages !== page && !isLoading && (
-        <Button onClick={loadMore} />
+        <LoadMoreBtn onClick={loadMore} />
       )}
       <Toaster />
-      <GlobalStyle />
     </Container>
   );
 };

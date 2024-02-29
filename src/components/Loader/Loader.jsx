@@ -1,17 +1,16 @@
-import { Dna } from 'react-loader-spinner';
-import { LoaderWrap } from './Loader.styled';
+import { Blocks } from "react-loader-spinner";
+import css from "./Loader.css";
 
 export const Loader = () => {
   return (
-    <LoaderWrap>
-      <Dna
-        visible={true}
-        height="80"
-        width="80"
-        ariaLabel="dna-loading"
-        wrapperStyle={{}}
-        wrapperClass="dna-wrapper"
-      />
-    </LoaderWrap>
+    <Blocks
+      height="80"
+      width="80"
+      color="#4fa94d"
+      ariaLabel="blocks-loading"
+      wrapperStyle={{}}
+      wrapperClass="blocks-wrapper"
+      visible={true}
+    />
   );
 };
