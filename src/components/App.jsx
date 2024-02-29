@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { GlobalStyle } from './GlobalStyle';
 import { fetchImages, sortedImages } from './Api';
 import { Container, Empty } from './App.css';
 import { ImageGallery } from './ImageGallery/ImageGallery';
